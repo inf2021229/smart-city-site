@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Smart City Map</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+        <style>
+            #map {
+                height: 100vh; /* Full screen map */
+            }
+        </style>
+    </head>
+    <body>
+        <div id="map"></div>
+
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+        <script>
+            // Initialize the map
+            const map = L.map('map').setView([37.7749, -122.4194], 13); // Default center and zoom level
+
+            // Add a tile layer (OpenStreetMap)
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            // Fetch reports from the API
+            fetch('/api/reports')
+                .then(response => response.json())
+                .then(reports => {
+                    reports.forEach(report => {
+                        // Add a marker for each report
+                        const marker = L.marker([report.latitude, report.longitude]).addTo(map);
+
+                        // Add a popup with the report description
+                        marker.bindPopup(`<b>Description:</b> ${report.description}`);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching reports:', error);
+                });
+        </script>
+    </body>
+</html>
